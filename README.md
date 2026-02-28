@@ -194,35 +194,35 @@ src/main/resources/
 
 ```mermaid
 flowchart TD
-    A([Cliente HTTP]) -->|POST /api/v1/#123;mode#125;/enrollments| B[Controller]
-    B -->|EnrollmentRequest validado| C{¿Evento existe?}
+    A([Cliente HTTP]) -->|POST enrollments| B[Controller]
+    B -->|EnrollmentRequest validado| C{Evento existe?}
 
     C -->|No| E1[EventNotFoundException]
-    C -->|Sí| D{¿Participante existe?}
+    C -->|Si| D{Participante existe?}
 
     D -->|No| E2[ParticipantNotFoundException]
-    D -->|Sí| F{¿Ya inscrito\nACTIVE?}
+    D -->|Si| F{Ya inscrito ACTIVE?}
 
-    F -->|Sí| E3[DuplicateEnrollmentException]
-    F -->|No| G{¿availableSpots > 0?}
+    F -->|Si| E3[DuplicateEnrollmentException]
+    F -->|No| G{availableSpots mayor a 0?}
 
     G -->|No| E4[EventFullException]
-    G -->|Sí| H[Iniciar @Transactional\nSERIALIZABLE]
+    G -->|Si| H[Iniciar Transactional SERIALIZABLE]
 
     H --> I[Decrementar availableSpots]
     I --> J[eventRepository.save]
     J --> K[Crear Enrollment ACTIVE]
     K --> L[enrollmentRepository.save]
 
-    L --> M{¿@Version\nconsistente?}
-    M -->|No — conflicto concurrente| E5[OptimisticLockException]
-    M -->|Sí| N[Publicar EnrollmentCreatedAuditEvent]
-    N --> O[AuditEventListener\nlog INFO]
-    O --> P([201 Created\nEnrollmentResponse])
+    L --> M{Version consistente?}
+    M -->|No - conflicto concurrente| E5[OptimisticLockException]
+    M -->|Si| N[Publicar EnrollmentCreatedAuditEvent]
+    N --> O[AuditEventListener log INFO]
+    O --> P([201 Created EnrollmentResponse])
 
     E1 & E2 & E3 & E4 --> Q[GlobalExceptionHandler]
     E5 --> Q
-    Q --> R([4xx/5xx ErrorResponse])
+    Q --> R([4xx o 5xx ErrorResponse])
 
     style H fill:#d4edda,stroke:#28a745
     style M fill:#fff3cd,stroke:#ffc107
