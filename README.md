@@ -194,7 +194,7 @@ src/main/resources/
 
 ```mermaid
 flowchart TD
-    A([Cliente HTTP]) -->|POST /api/v1/{mode}/enrollments| B[Controller]
+    A([Cliente HTTP]) -->|POST /api/v1/#123;mode#125;/enrollments| B[Controller]
     B -->|EnrollmentRequest validado| C{¿Evento existe?}
 
     C -->|No| E1[EventNotFoundException]
